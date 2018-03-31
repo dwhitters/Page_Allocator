@@ -1,4 +1,4 @@
-from tkinter import Tk, Frame, Label, Button, Text, Menu, W, E, N, S
+from tkinter import Tk, Frame, Label, Button, Text, Menu, W, E, N, S, DISABLED
 
 from data import Data
 
@@ -89,10 +89,12 @@ class MainWindow:
             # Set text to a blank string.
             self.SetText(self.frames[i], "")
             # Display the frames in the ram frame container.
-            self.frames[i].grid(row=i,column=0)
+            self.frames[i].grid(row=i,column=0, sticky=W+E+N+S, padx=10)
 
-        close_button = Button(self.ram_frame, text="Next", command=self.printMe)
-        close_button.grid(row=int(self.data.num_frames) + 1, column=0)
+        back_button = Button(self.ram_frame, text="Back", command=self.printMe)
+        back_button.grid(row=int(self.data.num_frames) + 1, column=0, sticky = W+E+N+S, pady=10)
+        next_button = Button(self.ram_frame, text="Next", command=self.printMe)
+        next_button.grid(row=int(self.data.num_frames) + 2, column=0, sticky=W+E+N+S, pady=10)
 
     def SetupOutputFrame(self):
         self.output_box = Text(self.output_frame)
@@ -107,3 +109,4 @@ class MainWindow:
 
     def SetInputText(self, text_list):
         self.SetText(self.input_box, "".join(text_list))
+        self.input_box.config(state=DISABLED) # Make input box readonly.
