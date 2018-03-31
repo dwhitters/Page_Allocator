@@ -16,7 +16,7 @@ class Data:
 
         self._next_line = 0 # The next line to be processed in the process list.
 
-        self.process_list = self.GetProcessList()
+        self.process_list = []
 
     @property
     def num_frames(self):
@@ -41,5 +41,4 @@ class Data:
     @ram_size.setter
     def ram_size(self, value):
         self._ram_size = value
-
 

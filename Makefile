@@ -2,4 +2,4 @@
 
 .PHONY: run
 run:
-	python page_allocator/main.py
+	python page_allocator/main.py test_file.txt

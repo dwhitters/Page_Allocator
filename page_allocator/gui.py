@@ -29,7 +29,7 @@ class MainWindow:
         OUTPUT_CONTAINER = 2
 
         self.master = master
-        master.title("A simple GUI")
+        master.title("Simulated Page Allocation Manager")
 
         self.data = Data()
 
@@ -49,7 +49,7 @@ class MainWindow:
         # Layout the main containers
         self.file_frame.grid(row=0, column=FILE_CONTAINER, sticky=E+W)
         self.ram_frame.grid(row=0, column=RAM_CONTAINER, sticky=N+S+E+W)
-        self.output_frame.grid(row=0, column=OUTPUT_CONTAINER, sticky=E+W+N+S)
+        self.output_frame.grid(row=0, column=OUTPUT_CONTAINER, sticky=E+W)
 
         self.CreateMenuBar()
         self.SetupFrames()
@@ -69,7 +69,7 @@ class MainWindow:
 
         self.master.config(menu=menubar)
 
-    def SetFrameText(self, frame, text):
+    def SetText(self, frame, text):
             # Delete all text in the box from line 1, character 0 to end.
             frame.delete(1.0, "end")
             # Set the text.
@@ -79,7 +79,7 @@ class MainWindow:
         self.input_box = Text(self.file_frame)
         self.input_box.grid(row=0, column=0)
 
-        self.SetFrameText(self.input_box, "I am the input")
+        self.SetText(self.input_box, "I'm the input")
 
     def SetupRamFrame(self):
         self.frames = [] # Create list of frames
@@ -87,20 +87,23 @@ class MainWindow:
             # Create a list of "frames"
             self.frames.append(Text(self.ram_frame, width=20, height=5))
             # Set text to a blank string.
-            self.frames[i].insert("end", "breh")
+            self.SetText(self.frames[i], "")
             # Display the frames in the ram frame container.
             self.frames[i].grid(row=i,column=0)
 
         close_button = Button(self.ram_frame, text="Next", command=self.printMe)
+        close_button.grid(row=int(self.data.num_frames) + 1, column=0)
 
     def SetupOutputFrame(self):
         self.output_box = Text(self.output_frame)
         self.output_box.grid(row=0, column=0)
 
-        self.SetFrameText(self.output_box, "I am the output")
+        self.SetText(self.output_box, "I'm the output")
 
     def SetupFrames(self):
         self.SetupFileFrame()
         self.SetupRamFrame()
         self.SetupOutputFrame()
 
+    def SetInputText(self, text_list):
+        self.SetText(self.input_box, "".join(text_list))
