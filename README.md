@@ -7,6 +7,7 @@ The "execution sequence" of these simulated processes will be provided
 from a trace tape input file. Each line in the trace tape specifies either
 arrival or termination of a process.
 * Process arrival
+
     Encoded as three integers separated by spaces:
 
     _*pid codesize datasize*_
