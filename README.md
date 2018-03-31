@@ -8,10 +8,13 @@ from a trace tape input file. Each line in the trace tape specifies either
 arrival or termination of a process.
 * Process arrival
 - Encoded as three integers separated by spaces:
-_pid codesize datasize_
-Sizes are given in bytes.
+
+    _pid codesize datasize_
+
+    Sizes are given in bytes.
 
 * Process termination
+
     Encoded as two integers separated by a space with the second number
 being -1.
 
