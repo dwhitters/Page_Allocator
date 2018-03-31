@@ -12,6 +12,7 @@ _pid codesize datasize_
 Sizes are given in bytes.
 
 * Process termination
-- Encoded as two integers separated by a space with the second number
+    Encoded as two integers separated by a space with the second number
 being -1.
-_pid -1_
+
+    _pid -1_
