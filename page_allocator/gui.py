@@ -67,10 +67,14 @@ class MainWindow:
         self.master.config(menu=menubar)
 
     def SetText(self, frame, text):
-            # Delete all text in the box from line 1, character 0 to end.
-            frame.delete(1.0, "end")
-            # Set the text.
-            frame.insert("end", text)
+        # Delete all text in the box from line 1, character 0 to end.
+        frame.delete(1.0, "end")
+        # Set the text.
+        frame.insert("end", text)
+
+    def AppendText(self, box, text):
+        # Append the text from the end of the previous text.
+        box.insert("end", text)
 
     def SetupFileFrame(self):
         self.input_box = Text(self.file_frame)
@@ -108,9 +112,8 @@ class MainWindow:
         self.SetText(self.input_box, "".join(text_list))
         self.input_box.config(state=DISABLED) # Make input box readonly.
 
-    def SetOutputText(self, text_list):
-        self.SetText(self.output_box, "".join(text_list))
-        self.output_box.config(state=DISABLED) # Make input box readonly.
+    def AddOutputText(self, text):
+        self.AppendText(self.output_box, text)
 
     def PopupWarning(self, title, text):
         messagebox.showwarning(title, text)

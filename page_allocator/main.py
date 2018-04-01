@@ -52,16 +52,24 @@ class Ctl:
     def StartProcess(self, process):
         process_id = process[PID_IDX] # Get the process id.
         # Calculate number of pages needed for code (round up).
-        num_code_pages = (int(process[CODE_SIZE_IDX]) + self.data.page_size - 1) / self.data.page_size
+        num_code_pages = int((int(process[CODE_SIZE_IDX]) + self.data.page_size - 1) / self.data.page_size)
         # Calculate number of pages needed for data (round up).
-        num_data_pages = (int(process[DATA_SIZE_IDX]) + self.data.page_size - 1) / self.data.page_size
+        num_data_pages = int((int(process[DATA_SIZE_IDX]) + self.data.page_size - 1) / self.data.page_size)
         # Check if there's room in RAM.
         if len(self.data.free_frames_list) > (num_code_pages + num_data_pages):
+            self.gui.AddOutputText("Loading program "+process_id+" into RAM:"+
+                                    "code="+process[CODE_SIZE_IDX]+" ("+
+                                    str(num_code_pages)+
+                                    " pages), data="+process[DATA_SIZE_IDX]+
+                                    " ("+str(num_data_pages)+" pages)\n")
             code_page_table = []
             # Allocate the frames and create page table for code
             for i in range(0, int(num_code_pages)):
                code_page_table.append(self.data.free_frames_list[0])
                self.gui.SetFrameText(self.data.free_frames_list[0], "Code-"+str(i)+" of P"+str(process_id))
+               self.gui.AddOutputText("Load Code page "+str(i)+" of process "+
+                                      process_id+" to frame "+
+                                      str(self.data.free_frames_list[0])+"\n")
                del self.data.free_frames_list[0]
 
             data_page_table = []
@@ -69,11 +77,16 @@ class Ctl:
             for i in range(0, int(num_data_pages)):
                data_page_table.append(self.data.free_frames_list[0])
                self.gui.SetFrameText(self.data.free_frames_list[0], "Data-"+str(i)+" of P"+str(process_id))
+               self.gui.AddOutputText("Load Data page "+str(i)+" of process "+
+                                      process_id+" to frame "+
+                                      str(self.data.free_frames_list[0])+"\n")
                del self.data.free_frames_list[0]
 
             # Save the data and code page tables in data with their process ID.
             self.data.data_page_tables.append((process_id, data_page_table))
             self.data.code_page_tables.append((process_id, code_page_table))
+        else:
+            self.gui.AddOutputText("Not enough space for program "+process_id+"!\n")
 
     def FreePageTable(self, process_id, page_table, page_table_list):
         # Free the RAM frames containing pages in the page table.
@@ -96,7 +109,7 @@ class Ctl:
         if p is not None:
             return p[1]
         else:
-            # Add output text.
+            self.gui.AddOutputText("Termination not executed. PID #"+str(process_id)+" not in memory!\n")
 
     def TerminateProcess(self, process):
         process_id = process[PID_IDX] # Get the process id
@@ -111,6 +124,8 @@ class Ctl:
             code_page_table = self.GetPageTable(process_id, self.data.code_page_tables)
             # Code page table is a tuple. [PID, page_table]
             self.FreePageTable(process_id, code_page_table, self.data.code_page_tables)
+
+            self.gui.AddOutputText("End of Program "+process_id+"\n")
 
 # Start the program
 # Create main root window.
