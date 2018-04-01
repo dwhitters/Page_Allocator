@@ -16,7 +16,38 @@ class Data:
 
         self._next_line = 0 # The next line to be processed in the process list.
 
-        self.process_list = []
+        self._process_list = []
+
+        # Holds the free frames.
+        self._free_frames_list = list(range(int(self._num_frames)))
+        # Holds code page tables corresponding to the processes in memory.
+        self._code_page_tables = []
+        # Holds data page tables corresponding to the processes in memory.
+        self._data_page_tables = []
+
+    @property
+    def code_page_tables(self):
+        return self._code_page_tables
+
+    @code_page_tables.setter
+    def code_page_tables(self, value):
+        self._code_page_tables = value
+
+    @property
+    def data_page_tables(self):
+        return self._data_page_tables
+
+    @data_page_tables.setter
+    def data_page_tables(self, value):
+        self._data_page_tables = value
+
+    @property
+    def next_line(self):
+        return self._next_line
+
+    @next_line.setter
+    def next_line(self, value):
+        self._next_line = value
 
     @property
     def num_frames(self):
@@ -32,7 +63,15 @@ class Data:
 
     @page_size.setter
     def page_size(self, value):
-        self._page_size = value
+        success = true
+        # Make sure the page size is a power of 2.
+        log_base_2 = log(value, 2)
+        if ceil(log_base_2) == floor(log_base_2):
+            self._page_size = value
+        else:
+            success = false
+
+        return success # Return whether the page size was successfully set.
 
     @property
     def ram_size(self):
@@ -41,4 +80,12 @@ class Data:
     @ram_size.setter
     def ram_size(self, value):
         self._ram_size = value
+
+    @property
+    def free_frames_list(self):
+        return self._free_frames_list
+
+    @free_frames_list.setter
+    def free_frames_list(self, value):
+        self._free_frames_list = value
 

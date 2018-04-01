@@ -1,6 +1,4 @@
-from tkinter import Tk, Frame, Label, Button, Text, Menu, W, E, N, S, DISABLED
-
-from data import Data
+from tkinter import Tk, Frame, Label, Button, Text, Menu, W, E, N, S, DISABLED, messagebox
 
 class LeftContainer:
     def __init__(self, master):
@@ -21,8 +19,7 @@ class LeftContainer:
         print("Greetings")
 
 class MainWindow:
-    def __init__(self, master):
-
+    def __init__(self, master, presenter):
         # Container identifiers
         FILE_CONTAINER   = 0
         RAM_CONTAINER    = 1
@@ -31,7 +28,7 @@ class MainWindow:
         self.master = master
         master.title("Simulated Page Allocation Manager")
 
-        self.data = Data()
+        self.presenter = presenter
 
         # Allow file and output containers to grow when window is expanded.
         master.grid_columnconfigure(FILE_CONTAINER, weight=1)
@@ -52,7 +49,7 @@ class MainWindow:
         self.output_frame.grid(row=0, column=OUTPUT_CONTAINER, sticky=E+W)
 
         self.CreateMenuBar()
-        self.SetupFrames()
+        self.presenter.SetGui(self)
 
     def printMe(self):
         print("Me")
@@ -81,32 +78,42 @@ class MainWindow:
 
         self.SetText(self.input_box, "I'm the input")
 
-    def SetupRamFrame(self):
+    def SetupRamFrame(self, num_frames):
         self.frames = [] # Create list of frames
-        for i in range(0, int(self.data.num_frames)):
+        for i in range(0, int(num_frames)):
             # Create a list of "frames"
             self.frames.append(Text(self.ram_frame, width=20, height=5))
-            # Set text to a blank string.
-            self.SetText(self.frames[i], "")
+            # Set text to "Free".
+            self.SetText(self.frames[i], "Free")
             # Display the frames in the ram frame container.
             self.frames[i].grid(row=i,column=0, sticky=W+E+N+S, padx=10)
 
         back_button = Button(self.ram_frame, text="Back", command=self.printMe)
-        back_button.grid(row=int(self.data.num_frames) + 1, column=0, sticky = W+E+N+S, pady=10)
-        next_button = Button(self.ram_frame, text="Next", command=self.printMe)
-        next_button.grid(row=int(self.data.num_frames) + 2, column=0, sticky=W+E+N+S, pady=10)
+        back_button.grid(row=int(num_frames) + 1, column=0, sticky = W+E+N+S, pady=10)
+        next_button = Button(self.ram_frame, text="Next", command=self.presenter.RunNextProcess)
+        next_button.grid(row=int(num_frames) + 2, column=0, sticky=W+E+N+S, pady=10)
 
     def SetupOutputFrame(self):
         self.output_box = Text(self.output_frame)
         self.output_box.grid(row=0, column=0)
 
-        self.SetText(self.output_box, "I'm the output")
+        self.SetText(self.output_box, "")
 
-    def SetupFrames(self):
+    def SetupFrames(self, num_frames):
         self.SetupFileFrame()
-        self.SetupRamFrame()
+        self.SetupRamFrame(num_frames)
         self.SetupOutputFrame()
 
     def SetInputText(self, text_list):
         self.SetText(self.input_box, "".join(text_list))
         self.input_box.config(state=DISABLED) # Make input box readonly.
+
+    def SetOutputText(self, text_list):
+        self.SetText(self.output_box, "".join(text_list))
+        self.output_box.config(state=DISABLED) # Make input box readonly.
+
+    def PopupWarning(self, title, text):
+        messagebox.showwarning(title, text)
+
+    def SetFrameText(self, frame_num, text):
+        self.SetText(self.frames[frame_num], text)
