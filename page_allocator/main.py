@@ -3,7 +3,7 @@ import sys
 
 from tkinter import Tk
 # Import the data used in the project.
-from data import Data
+from data import Data, PCB
 # Import the main window class from the gui file.
 from gui import MainWindow
 
@@ -82,50 +82,48 @@ class Ctl:
                                       str(self.data.free_frames_list[0])+"\n")
                del self.data.free_frames_list[0]
 
-            # Save the data and code page tables in data with their process ID.
-            self.data.data_page_tables.append((process_id, data_page_table))
-            self.data.code_page_tables.append((process_id, code_page_table))
+            # Save the data and code page tables in a "process control block".
+            pcb = PCB(process_id)
+
+            pcb.code_size = process[CODE_SIZE_IDX]
+            pcb.data_size = process[DATA_SIZE_IDX]
+            pcb.num_code_pages = num_code_pages
+            pcb.num_data_pages = num_data_pages
+            pcb.code_page_table = code_page_table
+            pcb.data_page_table = data_page_table
+
+            self.data.pcb_table.append(pcb)
+            print(self.data.pcb_table)
+
         else:
             self.gui.AddOutputText("Not enough space for program "+process_id+"!\n")
 
-    def FreePageTable(self, process_id, page_table, page_table_list):
+    def FreePageTable(self, page_table):
         # Free the RAM frames containing pages in the page table.
         for page in page_table:
             self.data.free_frames_list.append(page)
             # Clear the frame text.
             self.gui.SetFrameText(self.data.free_frames_list[-1], "Free")
 
-            # Remove the page table from the page table list.
-            for table in page_table_list:
-                if process_id in table:
-                    page_table_list.remove(table)
+    def FreeProcess(self, pcb):
+        self.FreePageTable(pcb.code_page_table)
+        self.FreePageTable(pcb.data_page_table)
 
-    def GetPageTable(self, process_id, page_table_list):
-        p = None
-        for process in page_table_list:
-            if process_id in process:
-                p = process
-
-        if p is not None:
-            return p[1]
-        else:
-            self.gui.AddOutputText("Termination not executed. PID #"+str(process_id)+" not in memory!\n")
+        # Remove the freed process' control block from the table.
+        self.data.pcb_table.remove(pcb)
+        print(self.data.pcb_table)
 
     def TerminateProcess(self, process):
         process_id = process[PID_IDX] # Get the process id
-        # Find the process data page table in the data page table list.
-        data_page_table = self.GetPageTable(process_id, self.data.data_page_tables)
-        # If the process was found...
-        if data_page_table is not None:
-            # Free the data page table
-            self.FreePageTable(process_id, data_page_table, self.data.data_page_tables)
-
-            # Find the process code page table in the code page table list.
-            code_page_table = self.GetPageTable(process_id, self.data.code_page_tables)
-            # Code page table is a tuple. [PID, page_table]
-            self.FreePageTable(process_id, code_page_table, self.data.code_page_tables)
-
+        # An error will be raised if a process is terminated that doesn't exist.
+        try:
+            # Find the process control block if it exists.
+            pcb = [block for block in self.data.pcb_table if block.pid == process_id][0]
+            # Free the process.
+            self.FreeProcess(pcb)
             self.gui.AddOutputText("End of Program "+process_id+"\n")
+        except:
+            self.gui.AddOutputText("Termination not executed. PID #"+str(process_id)+" not in memory!\n")
 
 # Start the program
 # Create main root window.

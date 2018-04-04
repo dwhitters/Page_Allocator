@@ -3,6 +3,18 @@
 # Set the size of kilobyte to 1024 bytes.
 KB = 1024
 
+# Process control block class. Contains the PID, code size, data size,
+# code page table, and data page table.
+class PCB:
+    def __init__(self, PID):
+        self.pid = PID
+        self.code_size = 0
+        self.data_size = 0
+        self.num_code_pages = 0
+        self.num_data_pages = 0
+        self.code_page_table = []
+        self.data_page_table = []
+
 # Frames list
 class Data:
 
@@ -16,30 +28,21 @@ class Data:
 
         self._next_line = 0 # The next line to be processed in the process list.
 
-        self._process_list = []
+        self._process_list = [] # Contains the list of process actions.
 
         # Holds the free frames.
         self._free_frames_list = list(range(int(self._num_frames)))
-        # Holds code page tables corresponding to the processes in memory.
-        self._code_page_tables = []
-        # Holds data page tables corresponding to the processes in memory.
-        self._data_page_tables = []
+
+        # Contains all process control blocks in use.
+        self._pcb_table = []
 
     @property
-    def code_page_tables(self):
-        return self._code_page_tables
+    def pcb_table(self):
+        return self._pcb_table
 
-    @code_page_tables.setter
-    def code_page_tables(self, value):
-        self._code_page_tables = value
-
-    @property
-    def data_page_tables(self):
-        return self._data_page_tables
-
-    @data_page_tables.setter
-    def data_page_tables(self, value):
-        self._data_page_tables = value
+    @pcb_table.setter
+    def pcb_table(self, value):
+        self._pcb_table = value
 
     @property
     def next_line(self):
