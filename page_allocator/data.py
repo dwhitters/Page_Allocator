@@ -15,7 +15,7 @@ class PCB:
         self.code_page_table = []
         self.data_page_table = []
 
-# Frames list
+# Holds all information used by the program.
 class Data:
 
     def __init__(self):

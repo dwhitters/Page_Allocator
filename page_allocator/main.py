@@ -49,6 +49,11 @@ class Ctl:
         except:
             raise RuntimeError('No input file specified')
 
+    # Adds a process to main memory if it can fit. If so, a PCB is created
+    # for it and frames in memory are allocated to it.
+    #
+    # @param process
+    #   The process trace tape input list.
     def StartProcess(self, process):
         process_id = process[PID_IDX] # Get the process id.
         # Calculate number of pages needed for code (round up).
@@ -97,6 +102,31 @@ class Ctl:
         else:
             self.gui.AddOutputText("Not enough space for program "+process_id+"!\n")
 
+        # Set the page table output text with the updated tables.
+        self.gui.SetPageTableBoxText(self.CompilePageTableText())
+
+    # Compiles the text to set the Page table output text box to.
+    #
+    # @return
+    #   String that the page table output text box should be set to.
+    def CompilePageTableText(self):
+        page_table_text = "PAGE TABLES:\n\n"
+        # Get table data from each process in memory.
+        for pcb in self.data.pcb_table:
+            page_table_text += ("P"+pcb.pid+" page table(s)\n")
+            page_table_text += "\tPage\tFrame\n"
+            # Display the text table.
+            for index, page in enumerate(pcb.code_page_table):
+                page_table_text += "Text\t"+str(index)+"\t"+str(page)+"\n"
+            for index, page in enumerate(pcb.data_page_table):
+                page_table_text += "Data\t"+str(index)+"\t"+str(page)+"\n"
+
+            page_table_text += "\n" # Add extra newline for better separation.
+
+        return page_table_text
+
+
+
     def FreePageTable(self, page_table):
         # Free the RAM frames containing pages in the page table.
         for page in page_table:
@@ -122,6 +152,9 @@ class Ctl:
             self.gui.AddOutputText("End of Program "+process_id+"\n")
         except:
             self.gui.AddOutputText("Termination not executed. PID #"+str(process_id)+" not in memory!\n")
+
+        # Set the page table output text with the updated tables.
+        self.gui.SetPageTableBoxText(self.CompilePageTableText())
 
 # Start the program
 # Create main root window.

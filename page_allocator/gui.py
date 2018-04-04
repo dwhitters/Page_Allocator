@@ -1,23 +1,5 @@
 from tkinter import Tk, Frame, Label, Button, Text, Menu, W, E, N, S, DISABLED, messagebox
 
-class LeftContainer:
-    def __init__(self, master):
-        self.master = master
-
-        self.label_text = "ASDF"
-        self.label = Label(master, textvariable=self.label_text)
-
-        self.greet_button = Button(master, text="Greet", command=self.greet)
-
-        self.close_button = Button(master, text="Close", command=master.quit)
-
-        self.label.grid(columnspan=1, row=0, sticky=W)
-        self.greet_button.grid(row=1)
-        self.close_button.grid(row=2)
-
-    def greet(self):
-        print("Greetings")
-
 class MainWindow:
     def __init__(self, master, presenter):
         # Container identifiers
@@ -53,6 +35,8 @@ class MainWindow:
 
     def printMe(self):
         print("Me")
+
+    # Creates the menubar with a "File" dropdown menu.
     def CreateMenuBar(self):
         # Setup the menu and sub menu
         menubar = Menu(self.master)
@@ -66,22 +50,37 @@ class MainWindow:
 
         self.master.config(menu=menubar)
 
+    # Sets the text within a textbox.
+    #
+    # @param frame
+    #   The textbox to be set.
+    # @param text
+    #   The text that the textbox text will be set to.
     def SetText(self, frame, text):
         # Delete all text in the box from line 1, character 0 to end.
         frame.delete(1.0, "end")
         # Set the text.
         frame.insert("end", text)
 
+    # Appends text to the text within a text box.
+    #
+    # @param text
+    #   The text to be appended.
     def AppendText(self, box, text):
         # Append the text from the end of the previous text.
         box.insert("end", text)
 
+    # Sets up the file frame to a default string.
     def SetupFileFrame(self):
         self.input_box = Text(self.file_frame)
         self.input_box.grid(row=0, column=0)
 
         self.SetText(self.input_box, "I'm the input")
 
+    # Sets up the RAM frame.
+    #
+    # @param num_frames
+    #   The number of frames that will be created.
     def SetupRamFrame(self, num_frames):
         self.frames = [] # Create list of frames
         for i in range(0, int(num_frames)):
@@ -97,26 +96,57 @@ class MainWindow:
         next_button = Button(self.ram_frame, text="Next", command=self.presenter.RunNextProcess)
         next_button.grid(row=int(num_frames) + 2, column=0, sticky=W+E+N+S, pady=10)
 
+    # Sets up the output frame.
     def SetupOutputFrame(self):
+
+        # Setup the process log box.
         self.output_box = Text(self.output_frame)
         self.output_box.grid(row=0, column=0)
-
         self.SetText(self.output_box, "")
 
+        # Setup the page table output box.
+        self.page_table_box = Text(self.output_frame)
+        self.page_table_box.grid(row=1, column=0)
+        self.SetText(self.page_table_box, "")
+
+    # Sets the input text to the text within the list.
+    #
+    # @param text_list
+    #   The list of text which the input text box will be set to.
+    def SetInputText(self, text_list):
+        self.SetText(self.input_box, "".join(text_list))
+        self.input_box.config(state=DISABLED) # Make input box readonly.
+
+    # Adds text to the output box.
+    #
+    # @param text
+    #   The text to be added to the box.
+    def AddOutputText(self, text):
+        self.AppendText(self.output_box, text)
+
+    # Sets the page table box text.
+    #
+    # @param text
+    #   The text to set the page table box text to.
+    def SetPageTableBoxText(self, text):
+        self.SetText(self.page_table_box, text)
+
+    # Popup with the title and text.
+    #
+    # @param title
+    #   The title of the popup box.
+    # @param text
+    #   The message within the popup.
+    def PopupWarning(self, title, text):
+        messagebox.showwarning(title, text)
+
+    # Set the object's text in the RAM frame.
+    def SetFrameText(self, frame_num, text):
+        self.SetText(self.frames[frame_num], text)
+
+    # Setup the GUI.
     def SetupFrames(self, num_frames):
         self.SetupFileFrame()
         self.SetupRamFrame(num_frames)
         self.SetupOutputFrame()
 
-    def SetInputText(self, text_list):
-        self.SetText(self.input_box, "".join(text_list))
-        self.input_box.config(state=DISABLED) # Make input box readonly.
-
-    def AddOutputText(self, text):
-        self.AppendText(self.output_box, text)
-
-    def PopupWarning(self, title, text):
-        messagebox.showwarning(title, text)
-
-    def SetFrameText(self, frame_num, text):
-        self.SetText(self.frames[frame_num], text)
