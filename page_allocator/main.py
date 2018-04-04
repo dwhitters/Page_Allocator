@@ -68,6 +68,9 @@ class Ctl:
                                     " pages), data="+process[DATA_SIZE_IDX]+
                                     " ("+str(num_data_pages)+" pages)\n")
             code_page_table = []
+            # Sort the free frames in order to allocate from the lowest
+            # memory address first.
+            self.data.free_frames_list.sort()
             # Allocate the frames and create page table for code
             for i in range(0, int(num_code_pages)):
                code_page_table.append(self.data.free_frames_list[0])
