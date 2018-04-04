@@ -123,6 +123,7 @@ class MainWindow:
     #   The text to be added to the box.
     def AddOutputText(self, text):
         self.AppendText(self.output_box, text)
+        self.output_box.see("end") # Scroll to end of box.
 
     # Sets the page table box text.
     #
@@ -130,6 +131,7 @@ class MainWindow:
     #   The text to set the page table box text to.
     def SetPageTableBoxText(self, text):
         self.SetText(self.page_table_box, text)
+        self.page_table_box.see("end") # Scroll to end of box.
 
     # Popup with the title and text.
     #
