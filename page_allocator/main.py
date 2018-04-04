@@ -93,7 +93,6 @@ class Ctl:
             pcb.data_page_table = data_page_table
 
             self.data.pcb_table.append(pcb)
-            print(self.data.pcb_table)
 
         else:
             self.gui.AddOutputText("Not enough space for program "+process_id+"!\n")
@@ -111,7 +110,6 @@ class Ctl:
 
         # Remove the freed process' control block from the table.
         self.data.pcb_table.remove(pcb)
-        print(self.data.pcb_table)
 
     def TerminateProcess(self, process):
         process_id = process[PID_IDX] # Get the process id
