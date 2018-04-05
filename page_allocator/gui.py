@@ -168,7 +168,7 @@ class MainWindow:
         self.popup_window.entry = Entry(self.popup_window)
         self.popup_window.entry.pack()
         self.popup_window.button = Button(self.popup_window, text="Set",
-                        command=self.presenter.SetPageSize)
+                        command=self.presenter.SetRamSize)
         self.popup_window.button.pack()
 
     # Displays a popup prompt for the page size.
