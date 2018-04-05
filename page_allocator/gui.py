@@ -36,9 +36,6 @@ class MainWindow:
         self.CreateMenuBar()
         self.presenter.SetGui(self)
 
-    def printMe(self):
-        print("Me")
-
     # Creates the menubar with a "File" dropdown menu.
     def CreateMenuBar(self):
         # Setup the menu and sub menu
@@ -99,10 +96,8 @@ class MainWindow:
 
         self.ram_frame.container.pack()
 
-        back_button = Button(self.ram_frame.container, text="Back", command=self.printMe)
-        back_button.grid(row=int(num_frames) + 1, column=0, sticky = W+E+N+S, pady=10)
         next_button = Button(self.ram_frame.container, text="Next", command=self.presenter.RunNextProcess)
-        next_button.grid(row=int(num_frames) + 2, column=0, sticky=W+E+N+S, pady=10)
+        next_button.grid(row=int(num_frames) + 1, column=0, sticky=W+E+N+S, pady=10)
 
     # Sets up the output frame.
     def SetupOutputFrame(self):
