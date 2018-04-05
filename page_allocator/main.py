@@ -62,11 +62,16 @@ class Ctl:
     def StartProcess(self, process):
         process_id = process[PID_IDX] # Get the process id.
         # Calculate number of pages needed for code (round up).
-        num_code_pages = int((int(process[CODE_SIZE_IDX]) + self.data.page_size - 1) / self.data.page_size)
+        num_code_pages = int(int(process[CODE_SIZE_IDX]) / self.data.page_size)
+        if int(int(process[CODE_SIZE_IDX]) % int(self.data.page_size)) != 0:
+            num_code_pages += 1
         # Calculate number of pages needed for data (round up).
-        num_data_pages = int((int(process[DATA_SIZE_IDX]) + self.data.page_size - 1) / self.data.page_size)
+        num_data_pages = int(int(process[DATA_SIZE_IDX]) / self.data.page_size)
+        if int(int(process[DATA_SIZE_IDX]) % int(self.data.page_size)) != 0:
+            num_data_pages += 1
+
         # Check if there's room in RAM.
-        if len(self.data.free_frames_list) > (num_code_pages + num_data_pages):
+        if len(self.data.free_frames_list) >= (num_code_pages + num_data_pages):
             self.gui.AddOutputText("Loading program "+process_id+" into RAM:"+
                                     "code="+process[CODE_SIZE_IDX]+" ("+
                                     str(num_code_pages)+
@@ -173,6 +178,48 @@ class Ctl:
 
         # Set the page table output text with the updated tables.
         self.gui.SetPageTableBoxText(self.CompilePageTableText())
+
+    # Sets the frame and page size of the memory.
+    def SetPageSize(self):
+        page_size = int(self.gui.GetPopupEntry())
+        self.gui.ClosePopup() # Close the popup window.
+
+        self.data.page_size = page_size
+
+        # Make sure the value was valid.
+        if(self.data.page_size != page_size):
+            self.gui.PopupWarning("ERROR", "Page size invalid!")
+        else:
+            # Set the number of frames.
+            self.data.num_frames = self.data.ram_size / self.data.page_size
+            self.Restart(self.data.num_frames) # Restart the program with the new settings.
+
+    # Sets the size of the memory.
+    def SetRamSize(self):
+        ram_size = int(self.gui.GetPopupEntry())
+        self.gui.ClosePopup() # Close the popup window.
+
+        self.data.ram_size = ram_size
+
+        # Make sure the value was valid.
+        if(self.data.ram_size != ram_size):
+            self.gui.PopupWarning("ERROR", "Memory size invalid!")
+        else:
+            # Set the number of frames.
+            self.data.num_frames = self.data.ram_size / self.data.page_size
+            self.Restart(self.data.num_frames) # Restart the program with the new settings.
+
+    # Restarts the program.
+    #
+    # @param num_frames
+    #   The number of frames in memory.
+    def Restart(self, num_frames):
+        self.data.next_line = 0
+        self.data.free_frames_list = list(range(int(self.data.num_frames)))
+        self.data.pcb_table = []
+
+        # Clear the output text boxes.
+        self.gui.ResetGui(num_frames)
 
 # Start the program
 # Create main root window.

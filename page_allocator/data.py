@@ -1,3 +1,5 @@
+from math import log, ceil, floor
+
 # Holds the data used by the program.
 
 # Set the size of kilobyte to 1024 bytes.
@@ -22,9 +24,6 @@ class Data:
         self._page_size = 512   # Set the default page size to 512 bytes
         self._ram_size = 4 * KB # Set the default RAM size to 4KB
         self._num_frames = self._ram_size / self._page_size    # Defaults to 8 frames
-
-        if (self._ram_size % self._page_size) != 0:
-            self._num_frames += 1
 
         self._next_line = 0 # The next line to be processed in the process list.
 
@@ -67,15 +66,10 @@ class Data:
 
     @page_size.setter
     def page_size(self, value):
-        success = true
         # Make sure the page size is a power of 2.
         log_base_2 = log(value, 2)
         if ceil(log_base_2) == floor(log_base_2):
             self._page_size = value
-        else:
-            success = false
-
-        return success # Return whether the page size was successfully set.
 
     @property
     def ram_size(self):
@@ -83,7 +77,11 @@ class Data:
 
     @ram_size.setter
     def ram_size(self, value):
-        self._ram_size = value
+        # Make sure the page size is a power of 2.
+        log_base_2 = log(value, 2)
+        # Ram size must be greater than page size.
+        if (value % self._page_size == 0) and (self._ram_size > self._page_size):
+            self._ram_size = value
 
     @property
     def free_frames_list(self):

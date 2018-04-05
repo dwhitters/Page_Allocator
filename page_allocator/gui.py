@@ -1,4 +1,5 @@
-from tkinter import Tk, Frame, Label, Button, Text, Menu, W, E, N, S, DISABLED, messagebox
+from tkinter import (Tk, Frame, Label, Button, Text, Menu, W, E, N, S, DISABLED,
+                    messagebox, Toplevel, Entry)
 
 # Contains the main window.
 class MainWindow:
@@ -43,8 +44,10 @@ class MainWindow:
         # Setup the menu and sub menu
         menubar = Menu(self.master)
         sub_menu = Menu(menubar)
-        sub_menu.add_command(label="Set Page Size...", command=self.printMe)
-        sub_menu.add_command(label="Set RAM Size...", command=self.printMe)
+        sub_menu.add_command(label="Set Page Size...",
+                            command=self.DisplayPageSizePrompt)
+        sub_menu.add_command(label="Set RAM Size...",
+                             command=self.DisplayRamSizePrompt)
         sub_menu.add_command(label="Exit", command=self.master.quit)
 
         # Make file a dropdown menu
@@ -85,17 +88,20 @@ class MainWindow:
     #   The number of frames that will be created.
     def SetupRamFrame(self, num_frames):
         self.frames = [] # Create list of frames
+        self.ram_frame.container = Frame(self.ram_frame, bg="blue", width=450, height=500)
         for i in range(0, int(num_frames)):
             # Create a list of "frames"
-            self.frames.append(Text(self.ram_frame, width=20, height=5))
+            self.frames.append(Text(self.ram_frame.container, width=20, height=5))
             # Set text to "Free".
             self.SetText(self.frames[i], "Free")
             # Display the frames in the ram frame container.
             self.frames[i].grid(row=i,column=0, sticky=W+E+N+S, padx=10)
 
-        back_button = Button(self.ram_frame, text="Back", command=self.printMe)
+        self.ram_frame.container.pack()
+
+        back_button = Button(self.ram_frame.container, text="Back", command=self.printMe)
         back_button.grid(row=int(num_frames) + 1, column=0, sticky = W+E+N+S, pady=10)
-        next_button = Button(self.ram_frame, text="Next", command=self.presenter.RunNextProcess)
+        next_button = Button(self.ram_frame.container, text="Next", command=self.presenter.RunNextProcess)
         next_button.grid(row=int(num_frames) + 2, column=0, sticky=W+E+N+S, pady=10)
 
     # Sets up the output frame.
@@ -154,3 +160,47 @@ class MainWindow:
         self.SetupRamFrame(num_frames)
         self.SetupOutputFrame()
 
+    # Displays a popup prompt for the memory size.
+    def DisplayRamSizePrompt(self):
+        self.popup_window = Toplevel(self.master)
+        self.popup_window.prompt = Label(self.popup_window, text="Enter memory size")
+        self.popup_window.prompt.pack()
+        self.popup_window.entry = Entry(self.popup_window)
+        self.popup_window.entry.pack()
+        self.popup_window.button = Button(self.popup_window, text="Set",
+                        command=self.presenter.SetPageSize)
+        self.popup_window.button.pack()
+
+    # Displays a popup prompt for the page size.
+    def DisplayPageSizePrompt(self):
+        self.popup_window = Toplevel(self.master)
+        self.popup_window.prompt = Label(self.popup_window, text="Enter page size")
+        self.popup_window.prompt.pack()
+        self.popup_window.entry = Entry(self.popup_window)
+        self.popup_window.entry.pack()
+        self.popup_window.button = Button(self.popup_window, text="Set",
+                        command=self.presenter.SetPageSize)
+        self.popup_window.button.pack()
+
+    # @return
+    #   The value of the entry in the popup window.
+    def GetPopupEntry(self):
+        if self.popup_window is not None:
+            return self.popup_window.entry.get()
+
+    # Closes the popup window if present.
+    def ClosePopup(self):
+        if self.popup_window is not None:
+            self.popup_window.destroy()
+
+    # Clears the output text boxes.
+    #
+    # @param num_frames
+    #   The number of frames in memory.
+    def ResetGui(self, num_frames):
+        self.SetText(self.output_box, "")
+        self.SetText(self.page_table_box, "")
+
+        self.ram_frame.container.pack_forget()
+        self.ram_frame.container.destroy()
+        self.SetupRamFrame(num_frames)
