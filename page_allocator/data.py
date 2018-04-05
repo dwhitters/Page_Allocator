@@ -17,7 +17,7 @@ class PCB:
 
 # Holds all information used by the program.
 class Data:
-
+    # Constructor.
     def __init__(self):
         self._page_size = 512   # Set the default page size to 512 bytes
         self._ram_size = 4 * KB # Set the default RAM size to 4KB
@@ -36,6 +36,7 @@ class Data:
         # Contains all process control blocks in use.
         self._pcb_table = []
 
+    # Getters and setters.
     @property
     def pcb_table(self):
         return self._pcb_table

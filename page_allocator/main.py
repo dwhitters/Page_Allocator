@@ -14,14 +14,18 @@ CODE_SIZE_IDX = 1
 # Index of the data size in a starting process list
 DATA_SIZE_IDX = 2
 
+# Controls the program.
 class Ctl:
-
+    # Constructor.
     def __init__(self):
         # Initialize the main data object
         self.data = Data()
         self.data.process_list = self.GetProcessList()
 
-
+    # Sets the gui object for the presenter and starts the gui.
+    #
+    # @param gui
+    #   The gui object that will be controlled by this class.
     def SetGui(self, gui):
         self.gui = gui
         # Setup gui
@@ -29,6 +33,7 @@ class Ctl:
         # Set the input file box text.
         self.gui.SetInputText(self.data.process_list)
 
+    # Run the next process in the trace tape input.
     def RunNextProcess(self):
         if len(self.data.process_list) > self.data.next_line:
             # Get the next "process" to run and convert it into a list of words.
@@ -128,8 +133,10 @@ class Ctl:
 
         return page_table_text
 
-
-
+    # Frees the passed in page table.
+    #
+    # @param page_table:
+    #   The page table to be freed.
     def FreePageTable(self, page_table):
         # Free the RAM frames containing pages in the page table.
         for page in page_table:
@@ -137,6 +144,10 @@ class Ctl:
             # Clear the frame text.
             self.gui.SetFrameText(self.data.free_frames_list[-1], "Free")
 
+    # Frees a process in memory using the process control block.
+    #
+    # @param pcb
+    #   The process control block of the process to be freed.
     def FreeProcess(self, pcb):
         self.FreePageTable(pcb.code_page_table)
         self.FreePageTable(pcb.data_page_table)
@@ -144,6 +155,10 @@ class Ctl:
         # Remove the freed process' control block from the table.
         self.data.pcb_table.remove(pcb)
 
+    # Terminates a process.
+    #
+    # @param process
+    #   List containing the process id and termination flag.
     def TerminateProcess(self, process):
         process_id = process[PID_IDX] # Get the process id
         # An error will be raised if a process is terminated that doesn't exist.

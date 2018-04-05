@@ -1,6 +1,8 @@
 from tkinter import Tk, Frame, Label, Button, Text, Menu, W, E, N, S, DISABLED, messagebox
 
+# Contains the main window.
 class MainWindow:
+    # Constructor.
     def __init__(self, master, presenter):
         # Container identifiers
         FILE_CONTAINER   = 0
